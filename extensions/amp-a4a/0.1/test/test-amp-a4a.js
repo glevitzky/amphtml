@@ -272,7 +272,7 @@ describe('amp-a4a', () => {
       adResponse.headers[RENDERING_TYPE_HEADER] = 'safeframe';
       a4a.buildCallback();
       const lifecycleEventStub =
-          sandbox.stub(a4a, 'protectedEmitLifecycleEvent_');
+          sandbox.stub(a4a, 'handleLifecycleStage_');
       a4a.onLayoutMeasure();
       return a4a.layoutCallback().then(() => {
         const child = a4aElement.querySelector('iframe[name]');
@@ -356,7 +356,7 @@ describe('amp-a4a', () => {
           () => iniLoadPromise);
       a4a.buildCallback();
       const lifecycleEventStub = sandbox.stub(
-          a4a, 'protectedEmitLifecycleEvent_');
+          a4a, 'handleLifecycleStage_');
       a4a.onLayoutMeasure();
       const layoutPromise = a4a.layoutCallback();
       return Promise.resolve().then(() => {
@@ -548,7 +548,7 @@ describe('amp-a4a', () => {
         a4a.createdCallback();
         a4a.firstAttachedCallback();
         a4a.buildCallback();
-        lifecycleEventStub = sandbox.stub(a4a, 'protectedEmitLifecycleEvent_');
+        lifecycleEventStub = sandbox.stub(a4a, 'handleLifecycleStage_');
         expect(onCreativeRenderSpy).to.not.be.called;
       });
     });
@@ -925,7 +925,7 @@ describe('amp-a4a', () => {
             sandbox.spy(Extensions.prototype, 'preloadExtension');
         a4a.buildCallback();
         const lifecycleEventStub =
-            sandbox.stub(a4a, 'protectedEmitLifecycleEvent_');
+            sandbox.stub(a4a, 'handleLifecycleStage_');
         a4a.onLayoutMeasure();
         expect(a4a.adPromise_).to.be.instanceof(Promise);
         return a4a.adPromise_.then(promiseResult => {
@@ -1135,7 +1135,7 @@ describe('amp-a4a', () => {
         const onNetworkFailureSpy = sandbox.spy(a4a, 'onNetworkFailure');
         a4a.buildCallback();
         const lifecycleEventStub = sandbox.stub(
-            a4a, 'protectedEmitLifecycleEvent_');
+            a4a, 'handleLifecycleStage_');
         a4a.onLayoutMeasure();
         expect(a4a.adPromise_).to.be.instanceof(Promise);
         return a4a.layoutCallback().then(() => {
@@ -1169,7 +1169,7 @@ describe('amp-a4a', () => {
             .returns({adUrl: TEST_URL + '&err=true'});
         a4a.buildCallback();
         const lifecycleEventStub = sandbox.stub(
-            a4a, 'protectedEmitLifecycleEvent_');
+            a4a, 'handleLifecycleStage_');
         a4a.onLayoutMeasure();
         expect(a4a.adPromise_).to.be.instanceof(Promise);
         return a4a.layoutCallback().then(() => {

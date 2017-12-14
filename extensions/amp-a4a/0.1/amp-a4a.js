@@ -295,18 +295,6 @@ export class AmpA4A extends AMP.BaseElement {
     this.getNow_ = (this.win.performance && this.win.performance.now) ?
       this.win.performance.now.bind(this.win.performance) : Date.now;
 
-    /**
-     * Protected version of emitLifecycleEvent that ensures error does not
-     * cause promise chain to reject.
-     * @private {function(string, !Object=)}
-     */
-    this.protectedEmitLifecycleEvent_ = protectFunctionWrapper(
-        this.emitLifecycleEvent, this,
-        (err, varArgs) => {
-          dev().error(TAG, this.element.getAttribute('type'),
-              'Error on emitLifecycleEvent', err, varArgs) ;
-        });
-
     /** @const {string} */
     this.sentinel = generateSentinel(window);
 
@@ -1640,15 +1628,13 @@ export class AmpA4A extends AMP.BaseElement {
 
   /**
    * Handles a lifecycle event by triggering the corresponding analytics event
-   * (if such an event exists) and by forwarding the event to the impl-specific
-   * handler in #emitLifecycleEvent.
+   * (if such an event exists).
    * @param {string} eventName
    * @param {!Object<string, string>=} opt_vars
    * @private
    */
   handleLifecycleStage_(eventName, opt_vars) {
     this.maybeTriggerAnalyticsEvent_(eventName);
-    this.protectedEmitLifecycleEvent_(eventName, opt_vars);
   }
 
   /**
@@ -1692,18 +1678,6 @@ export class AmpA4A extends AMP.BaseElement {
    * @return {?JsonObject}
    */
   getA4aAnalyticsConfig() { return null; }
-
-  /**
-   * To be overriden by network specific implementation.
-   * This function will be called for each lifecycle event as specified in the
-   * LIFECYCLE_STAGES enum declaration.  It may additionally pass extra
-   * variables of the form { name: val }.  It is up to the subclass what to
-   * do with those variables.
-   *
-   * @param {string} unusedEventName
-   * @param {!Object<string, string|number>=} opt_extraVariables
-   */
-  emitLifecycleEvent(unusedEventName, opt_extraVariables) {}
 
   /**
    * Attempts to execute Real Time Config, if the ad network has enabled it.

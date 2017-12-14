@@ -40,10 +40,6 @@ import {
   getIdentityToken,
 } from '../../../ads/google/a4a/utils';
 import {
-  googleLifecycleReporterFactory,
-  setGoogleLifecycleVarsFromHeaders,
-} from '../../../ads/google/a4a/google-data-reporter';
-import {
   installAnchorClickInterceptor,
 } from '../../../src/anchor-click-interceptor';
 import {removeElement} from '../../../src/dom';
@@ -90,12 +86,6 @@ export class AmpAdNetworkAdsenseImpl extends AmpA4A {
    */
   constructor(element) {
     super(element);
-
-    /**
-     * @type {!../../../ads/google/a4a/performance.GoogleAdLifecycleReporter}
-     */
-    this.lifecycleReporter_ = this.lifecycleReporter_ ||
-        this.initLifecycleReporter();
 
     /**
      * A unique identifier for this slot.
@@ -300,7 +290,6 @@ export class AmpAdNetworkAdsenseImpl extends AmpA4A {
 
   /** @override */
   extractSize(responseHeaders) {
-    setGoogleLifecycleVarsFromHeaders(responseHeaders, this.lifecycleReporter_);
     this.ampAnalyticsConfig_ = extractAmpAnalyticsConfig(this, responseHeaders);
     this.qqid_ = responseHeaders.get(QQID_HEADER);
     if (this.ampAnalyticsConfig_) {
@@ -341,21 +330,6 @@ export class AmpAdNetworkAdsenseImpl extends AmpA4A {
   }
 
   /** @override */
-  emitLifecycleEvent(eventName, opt_extraVariables) {
-    if (opt_extraVariables) {
-      this.lifecycleReporter_.setPingParameters(opt_extraVariables);
-    }
-    this.lifecycleReporter_.sendPing(eventName);
-  }
-
-  /**
-   * @return {!../../../ads/google/a4a/performance.BaseLifecycleReporter}
-   */
-  initLifecycleReporter() {
-    return googleLifecycleReporterFactory(this);
-  }
-
-  /** @override */
   onCreativeRender(creativeMetaData) {
     super.onCreativeRender(creativeMetaData);
     this.isAmpCreative_ = !!creativeMetaData;
@@ -376,14 +350,12 @@ export class AmpAdNetworkAdsenseImpl extends AmpA4A {
             this.ampAnalyticsConfig_,
             this.qqid_,
             !!creativeMetaData,
-            this.lifecycleReporter_.getDeltaTime(),
-            this.lifecycleReporter_.getInitTime());
+            0 /* TODO ADD ACTUAL VALUE */,
+            0 /* TODO ADD ACTUAL VALUE */);
       }
       this.ampAnalyticsElement_ =
           insertAnalyticsElement(this.element, this.ampAnalyticsConfig_, true);
     }
-
-    this.lifecycleReporter_.addPingsForVisibility(this.element);
 
     setStyles(dev().assertElement(this.iframe), {
       width: `${this.size_.width}px`,
@@ -415,7 +387,6 @@ export class AmpAdNetworkAdsenseImpl extends AmpA4A {
     const superResult = super.unlayoutCallback();
     this.element.setAttribute('data-amp-slot-index',
         this.win.ampAdSlotIdCounter++);
-    this.lifecycleReporter_ = this.initLifecycleReporter();
     if (this.uniqueSlotId_) {
       sharedState.removeSlot(this.uniqueSlotId_);
     }
