@@ -166,3 +166,18 @@ function checkOriginForSettingCookie(win, options, name) {
         + ' (in depth check): ' + name);
   }
 }
+
+/**
+ * @param {!Window} win
+ * @return {boolean}
+ */
+export function canSetCookie(win) {
+  const testCookieName = getTempCookieName(win);
+  const testCookieValue = 'TESTCOOKIEVALUE';
+  try {
+    setCookie(win, testCookieName, testCookieValue, Date.now() + 1000);
+    return getCookie(win, testCookieName) === testCookieValue;
+  } catch {}
+  return false;
+}
+
